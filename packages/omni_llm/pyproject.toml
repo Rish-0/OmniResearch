@@ -1,0 +1,17 @@
+[project]
+name = "omni-llm"
+version = "0.1.0"
+description = "LLM Gateway with role routing, structured output, circuit breaker, fallback, and FakeProvider"
+requires-python = ">=3.12"
+dependencies = [
+    "pydantic>=2.10.0",
+    "omni-contracts",
+    "omni-core",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/omni_llm"]

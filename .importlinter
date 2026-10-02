@@ -1,0 +1,70 @@
+[importlinter]
+root_packages =
+    omni_contracts
+    omni_core
+    omni_db
+    omni_llm
+    omni_agents
+    omni_orchestration
+    omni_rag
+    omni_ingestion
+    omni_memory
+    omni_experiments
+    omni_harness
+    omni_analysis
+    omni_observability
+    sandbox_runner
+
+[importlinter:contract:1]
+name = omni_contracts imports nothing internal
+type = forbidden
+source_modules =
+    omni_contracts
+forbidden_modules =
+    omni_core
+    omni_db
+    omni_llm
+    omni_agents
+    omni_orchestration
+    omni_rag
+    omni_ingestion
+    omni_memory
+    omni_experiments
+    omni_harness
+    omni_analysis
+    omni_observability
+
+[importlinter:contract:2]
+name = omni_core imports nothing internal
+type = forbidden
+source_modules =
+    omni_core
+forbidden_modules =
+    omni_contracts
+    omni_db
+    omni_llm
+    omni_agents
+    omni_orchestration
+    omni_rag
+    omni_ingestion
+    omni_memory
+    omni_experiments
+    omni_harness
+    omni_analysis
+    omni_observability
+
+[importlinter:contract:3]
+name = sandbox_runner must not import omni_db
+type = forbidden
+source_modules =
+    sandbox_runner
+forbidden_modules =
+    omni_db
+
+[importlinter:contract:4]
+name = omni_agents must not import sandbox_runner
+type = forbidden
+source_modules =
+    omni_agents
+forbidden_modules =
+    sandbox_runner

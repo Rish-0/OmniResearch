@@ -1,0 +1,78 @@
+[project]
+name = "omniresearch"
+version = "0.1.0"
+description = "Autonomous multimodal AI/ML research agent"
+requires-python = ">=3.12"
+readme = "README.md"
+
+[tool.uv.workspace]
+members = [
+    "packages/*",
+    "apps/api",
+    "services/*",
+]
+
+[tool.uv.sources]
+omni-contracts = { workspace = true }
+omni-core = { workspace = true }
+omni-db = { workspace = true }
+omni-llm = { workspace = true }
+omni-agents = { workspace = true }
+omni-orchestration = { workspace = true }
+omni-rag = { workspace = true }
+omni-ingestion = { workspace = true }
+omni-memory = { workspace = true }
+omni-experiments = { workspace = true }
+omni-harness = { workspace = true }
+omni-analysis = { workspace = true }
+omni-observability = { workspace = true }
+api = { workspace = true }
+workers = { workspace = true }
+sandbox-runner = { workspace = true }
+embedding-service = { workspace = true }
+scheduler = { workspace = true }
+
+[dependency-groups]
+dev = [
+    "ruff>=0.9.0",
+    "mypy>=1.14.0",
+    "pytest>=8.0",
+    "pytest-asyncio>=0.24.0",
+    "import-linter>=2.1",
+    "pyyaml>=6.0",
+    "aiosqlite>=0.20.0",
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+testpaths = ["tests"]
+markers = [
+    "integration: marks tests as integration tests (deselect with '-m \"not integration\"')",
+]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 120
+src = ["packages/*/src", "apps/*/src", "services/*/src", "tests"]
+
+[tool.ruff.lint]
+select = [
+    "E", "W", "F", "I", "N", "UP", "B", "A", "C4",
+    "PT", "RET", "SIM", "ARG", "PTH",
+]
+ignore = ["COM812", "E501", "N818"]
+
+[tool.ruff.lint.isort]
+known-first-party = [
+    "omni_contracts", "omni_core", "omni_db", "omni_llm",
+    "omni_agents", "omni_orchestration", "omni_rag",
+    "omni_ingestion", "omni_memory", "omni_experiments",
+    "omni_harness", "omni_analysis", "omni_observability",
+]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+warn_return_any = true
+warn_unused_configs = true
