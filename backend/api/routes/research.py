@@ -49,7 +49,8 @@ async def generate_research_plan(payload: ResearchPlanRequest) -> ResearchPlanRe
         return ResearchPlanResponse(
             research_id=research_id,
             status=final_state.get("status", "completed"),
-            plan=structured_plan
+            plan=structured_plan,
+            papers=final_state.get("papers", [])
         )
     except HTTPException:
         raise
