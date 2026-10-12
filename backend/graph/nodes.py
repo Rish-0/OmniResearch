@@ -3,6 +3,7 @@ from typing import Dict, Any, List
 
 from backend.graph.state import ResearchState
 from backend.agents.planner.agent import PlannerAgent
+from backend.agents.literature.agent import LiteratureAgent
 from backend.graph.routing import resolve_task_agent, RoutingError
 
 logger = logging.getLogger(__name__)
@@ -107,3 +108,64 @@ def task_router_node(state: ResearchState) -> Dict[str, Any]:
                 "error": str(err)
             }]
         }
+
+
+def literature_node(state: ResearchState) -> Dict[str, Any]:
+    """
+    LangGraph node for executing the Literature Research Agent.
+    Finds, retrieves, and synthesizes scholarly literature for the active subtask.
+    """
+    current_task_id = state.get("current_task", "")
+    research_question = state.get("research_question", "")
+
+    # Retrieve subtask details from research plan
+    plan = state.get("plan", {})
+    subtasks = plan.get("subtasks", []) if isinstance(plan, dict) else []
+    task_info = next((t for t in subtasks if t.get("task_id") == current_task_id), {})
+    task_desc = task_info.get("description", research_question)
+    query = task_info.get("title", research_question)
+
+    logger.info(f"literature_node executing for task '{current_task_id}': {query[:50]}")
+    agent = LiteratureAgent()
+    review_result = agent.run(query=query, task_description=task_desc, research_question=research_question)
+
+    # Update completed tasks
+    completed = list(state.get("completed_tasks", []))
+    if current_task_id and current_task_id not in completed:
+        completed.append(current_task_id)
+
+    # Accumulate task results
+    task_results = dict(state.get("task_results") or {})
+    task_results[current_task_id] = review_result.model_dump()
+
+    # Accumulate papers avoiding duplicates by title
+    existing_papers = list(state.get("papers") or [])
+    for paper in review_result.papers:
+        p_dict = paper.model_dump()
+        if not any(ep.get("title") == p_dict.get("title") for ep in existing_papers):
+            existing_papers.append(p_dict)
+
+    return {
+        "papers": existing_papers,
+        "task_results": task_results,
+        "completed_tasks": completed,
+        "status": "task_completed"
+    }
+
+
+def task_executor_node(state: ResearchState) -> Dict[str, Any]:
+    """
+    Executor node: dispatches to specialized agent if available,
+    or completes as stub for agents under development.
+    """
+    next_agent = state.get("next_agent", "")
+    if next_agent == "literature_agent":
+        return literature_node(state)
+
+    current_task = state.get("current_task", "")
+    completed = list(state.get("completed_tasks", []))
+    if current_task and current_task not in completed:
+        logger.info(f"task_executor_node marking '{current_task}' as completed (stub for {next_agent}).")
+        completed.append(current_task)
+    return {"completed_tasks": completed, "status": "task_completed"}
+

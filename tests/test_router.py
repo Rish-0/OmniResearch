@@ -150,9 +150,9 @@ class TestTaskRouterAndRegistry(unittest.TestCase):
         }
         final_state = research_workflow.invoke(initial_state)
 
-        self.assertEqual(final_state.get("status"), "task_routed")
-        self.assertTrue(final_state.get("current_task").startswith("task_"))
-        self.assertEqual(final_state.get("next_agent"), "literature_agent")
+        self.assertEqual(final_state.get("status"), "all_tasks_completed")
+        self.assertEqual(final_state.get("current_task"), "")
+        self.assertEqual(final_state.get("next_agent"), "")
 
 
 if __name__ == "__main__":
